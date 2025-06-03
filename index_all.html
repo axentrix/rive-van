@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rive Test</title>
+  <style>
+    canvas {
+      width: 300px;
+      height: 300px;
+      display: block;
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0;">
+<div id="container" style="display:flex; width:100%; height:100vh; align-items:center; justify-content:center; flex-direction:column; gap:24px; background:#2A2D3D;
+justify-content:center";>
+
+
+
+
+<canvas id="riveCanvas1" width="300" height="300"></canvas>
+<button id="toggleBtn">Next Artboard</button>
+
+
+
+</div>
+<script src="https://unpkg.com/@rive-app/canvas"></script>
+<script src="https://unpkg.com/@rive-app/webgl"></script> 
+<script>
+    const riveFile = "van-simple.riv"; // your actual .riv file path
+const stateMachine = "Complex"; // your state machine name
+const inputName = "orientationController"; // your input variable name
+  const configs  = [
+  { artboard: "artboarddark", orientation: 0 },
+  { artboard: "artboarddark", orientation: 1 },
+  { artboard: "artboardlight", orientation: 0 },
+  { artboard: "artboardlight", orientation: 1 },
+ { artboard: "artboarddark180", orientation: 0 },
+  { artboard: "artboarddark180", orientation: 1 },
+  { artboard: "artboardlight180", orientation: 0 },
+  { artboard: "artboardlight180", orientation: 1 }
+
+];
+ let currentIndex = 0;
+let riveInstance = null;
+
+function loadRive(config) {
+  if (riveInstance) {
+    riveInstance.cleanup(); // Clean up previous instance
+  }
+
+  riveInstance = new rive.Rive({
+    src: riveFile,
+    canvas: document.getElementById("riveCanvas1"),
+    autoplay: true,
+    artboard: config.artboard,
+    stateMachines: [stateMachine],
+    onLoad: (instance) => {
+      const inputs = instance.stateMachineInputs(stateMachine);
+      const orientationInput = inputs.find(i => i.name === inputName);
+      if (orientationInput) {
+        orientationInput.value = config.orientation;
+        console.log(`Loaded ${config.artboard}, orientation = ${config.orientation}`);
+      } else {
+        console.warn(`Input "${inputName}" not found in ${config.artboard}`);
+      }
+    }
+  });
+}
+
+document.getElementById("toggleBtn").addEventListener("click", () => {
+  currentIndex = (currentIndex + 1) % configs.length;
+  loadRive(configs[currentIndex]);
+});
+
+// Initial load
+loadRive(configs[currentIndex]);
+</script>
+
+
+</body>
+</html>
