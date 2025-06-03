@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rive Test</title>
+  <style>
+    canvas {
+      width: 300px;
+      height: 300px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<div id="container" style="display:flex; width:100%; height:100vh; align-items:center; justify-content:center; flex-direction:column; gap:24px; background:#2A2D3D;
+justify-content:center";>
+
+
+
+
+<canvas id="riveCanvas" width="500" height="500"></canvas>
+<button id="toggleTheme" style="all: unset; outline:none; width:200px; font-family:'Inter'; height:46px; border-radius:999px; background:#1c1f30; color:#fff; display:flex; align-items:center; justify-content:center;">Toggle Theme</button>
+
+<button id="toggleOrientation" style="all: unset; font-family:'Inter'; outline:none; width:200px; height:46px; border-radius:999px; background:#4B5563; color:#fff; display:flex; align-items:center; justify-content:center;">
+  Toggle Orientation
+</button>
+
+</div>
+<script src="https://unpkg.com/@rive-app/canvas"></script>
+<script src="https://unpkg.com/@rive-app/webgl"></script>
+<script>
+  const canvas = document.getElementById("riveCanvas");
+  let currentTheme = "artboarddark"; // use this consistently
+  let riveInstance;
+let orientationInput;
+ let orientationValue = 1;
+  function loadRiveArtboard(theme, preserveOrientation = false) {
+    if (riveInstance) {
+      riveInstance.cleanup();
+    }
+
+    console.log("Loading artboard:", theme); // log the correct variable
+
+    riveInstance = new rive.Rive({
+      src: "van-simple.riv",
+      canvas: canvas,
+      autoplay: true,
+      artboard: theme,
+      stateMachines: ["Complex"], // remove if not using state machine
+
+   onLoad: () => {
+        const inputs = riveInstance.stateMachineInputs("Complex");
+        orientationInput = inputs.find(input => input.name === "orientationControl");
+
+      try {
+            const inputs = riveInstance.stateMachineInputs("Complex");
+            orientationInput = inputs.find(input => input.name === "orientationControl");
+            if (!orientationInput) {
+              console.error("❌ orientationControl input not found");
+              return;
+            }
+            if (preserveOrientation) {
+              orientationInput.value = orientationValue;
+            }
+            console.log("✅ orientationControl is", orientationInput.value);
+          } catch (e) {
+            console.error("💥 Error accessing inputs:", e);
+          }
+    
+
+
+
+
+
+
+
+      }
+
+
+    });
+  }
+
+  // Initial load
+  loadRiveArtboard(currentTheme);
+
+  // Toggle on button click
+  document.getElementById("toggleTheme").addEventListener("click", () => {
+    currentTheme = currentTheme === "artboardlight" ? "artboarddark" : "artboardlight";
+    loadRiveArtboard(currentTheme);
+     const container = document.getElementById("container");
+  if (currentTheme === "artboarddark") {
+    container.style.background = "#2A2D3D"; // light background
+  } else {
+    container.style.background = "#EFF0F2"; // dark background
+  }
+  });
+   document.getElementById("toggleOrientation").addEventListener("click", () => {
+  
+     orientationValue = orientationValue === 1 ? 0 : 1;
+    console.log("New orientation value:", orientationValue);
+    loadRiveArtboard(currentTheme, true);
+  });
+</script>
+
+
+</body>
+</html>
